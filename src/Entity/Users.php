@@ -33,17 +33,87 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "string", length: 255)]
     private string $password;
 
-    #[ORM\Column(type: "string", length: 20, nullable: true, options: ["default" => "ROLE_USER"])]
-    private ?string $role = 'ROLE_USER';
+    // Utilisation d'un champ JSON pour les rôles permet une flexibilité future
+    #[ORM\Column(type: "json")]
+    private array $roles = [];
 
-    #[ORM\Column(type: "datetime", options: ["default" => "CURRENT_TIMESTAMP"])]
+    #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $createdAt;
 
-    // Implementations of UserInterface and PasswordAuthenticatedUserInterface methods
+    // Attribut pour le mot de passe en clair non persisté
+    private ?string $plainPassword = null;
 
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        // Définir un rôle par défaut
+        $this->roles = ['ROLE_USER'];
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(string $lastname): self
+    {
+        $this->lastname = $lastname;
+        return $this;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(string $firstname): self
+    {
+        $this->firstname = $firstname;
+        return $this;
+    }
+
+    public function getPhoneId(): ?string
+    {
+        return $this->phoneId;
+    }
+
+    public function setPhoneId(string $phoneId): self
+    {
+        $this->phoneId = $phoneId;
+        return $this;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(int $userId): self
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
     public function getRoles(): array
     {
-        return [$this->role];
+        // Retourne le tableau des rôles
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+        return $this;
     }
 
     public function getPassword(): string
@@ -51,8 +121,37 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
     public function getSalt()
     {
+        // Non nécessaire si vous utilisez bcrypt ou argon2i
         return null;
     }
 
@@ -60,8 +159,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->email;
     }
-
-    private $plainPassword;
 
     public function eraseCredentials(): void
     {
